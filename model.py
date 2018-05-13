@@ -93,11 +93,13 @@ def generator(samples, batch_size=32):
             outputs = np.array(angles)
             yield sklearn.utils.shuffle(inputs, outputs)
 
-def proProcessing(model):
+def preProcessing(model):
     """
     Create pre-processing layers.
     """
+    #Normalization
     model.add(Lambda(lambda x: (x / 255.0) - 0.5, input_shape=(160,320,3)))
+    #cropping
     model.add(Cropping2D(cropping=((50,20), (0,0))))
 
 
@@ -137,7 +139,7 @@ validation_generator = generator(validation_samples, batch_size=32)
 #Create model
 model = Sequential()
 
-proProcessing(model)
+preProcessing(model)
 createNVidiaModel(model)
 model.compile(loss='mse', optimizer='adam')
 fit = model.fit_generator(train_generator, samples_per_epoch= \
